@@ -203,8 +203,11 @@ button.danger { background: var(--danger); color: #fff; border-color: var(--dang
   background: var(--panel-2); border: 1px dashed var(--line); color: var(--muted);
   font-size: 11px; letter-spacing: 1px; }
 
-/* 캐릭터 아이콘 (프로시저럴 SVG) */
+/* 캐릭터 아이콘 (실사 아트 img 우선, 프로시저럴 SVG 폴백) */
 .nk-svg { display: block; }
+.nk-img { border-radius: 16%; border: 2px solid var(--r); object-fit: cover; box-sizing: border-box; background: #0a0e17; }
+.nk-img.r-SR { border-color: var(--sr); }
+.nk-img.r-SSR { border-color: var(--ssr); }
 .nikke { display: flex; align-items: flex-start; gap: 10px; }
 .nk-icon { flex: 0 0 auto; }
 .nk-icon .nk-svg { width: 48px; height: 48px; }

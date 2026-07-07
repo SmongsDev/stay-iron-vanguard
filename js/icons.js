@@ -31,9 +31,15 @@ const ICON = (function () {
     }
   }
 
+  // 실사 아트 보유 캐릭터 (img/{id}.png 128px). 미보유는 프로시저럴 SVG 폴백
+  const ART = new Set(['ignis', 'carmine', 'nova', 'aria', 'lumen', 'ceres', 'undine', 'vera', 'prism']);
+
   function nikkeIcon(id) {
     const b = ROSTER_MAP[id];
     if (!b) return '';
+    if (ART.has(id)) {
+      return '<img class="nk-svg nk-img r-' + b.rarity + '" src="img/' + id + '.png" alt="' + b.name + '">';
+    }
     const h = hash(id);
     const border = RARITY[b.rarity] || '#888';
     const fac = FACTION[b.corp] || '#22e0e0';
