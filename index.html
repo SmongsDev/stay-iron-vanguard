@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STAY: Iron Vanguard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 헤더: 재화 -->
+    <header id="topbar">
+      <div class="logo">STAY<span class="logo-sub">// idle</span></div>
+      <div class="wallet">
+        <span class="cur">💰 <b id="credits">0</b></span>
+        <span class="cur">💎 <b id="gems">0</b></span>
+      </div>
+    </header>
+
+    <!-- 전투 탭 -->
+    <section id="tab-combat" class="tab">
+      <div class="stage-head">
+        <span id="stage-label" class="stage-label">1-1</span>
+        <span id="boss-badge" class="boss-badge hidden">BOSS</span>
+        <span id="boss-timer" class="boss-timer hidden"></span>
+        <span id="total-dps" class="dps">DPS 0</span>
+      </div>
+
+      <div class="enemy">
+        <div class="hpbar"><div id="enemy-hp-fill" class="hp-fill"></div></div>
+        <div id="enemy-hp-text" class="hp-text">0 / 0</div>
+      </div>
+
+      <div id="burst-bar" class="burst">
+        <div class="burst-track"><div id="burst-fill" class="burst-fill"></div></div>
+        <div id="burst-dots" class="burst-dots"></div>
+        <div id="burst-status" class="burst-status"></div>
+      </div>
+
+      <p id="farming-note" class="farming-note hidden"></p>
+      <button id="retry-btn" class="retry-btn hidden">보스 재도전</button>
+
+      <button id="ad-boost-btn" class="ad-btn">📺 광고 보고 30분 DPS ×2</button>
+      <p id="boost-status" class="boost-status hidden"></p>
+
+      <div class="team-label">편성</div>
+      <div id="team-slots" class="team-slots"></div>
+    </section>
+
+    <!-- 아스트라 탭 -->
+    <section id="tab-nikke" class="tab hidden">
+      <div id="roster-list" class="roster-list"></div>
+    </section>
+
+    <!-- 모집 탭 -->
+    <section id="tab-gacha" class="tab hidden">
+      <p id="gacha-rates" class="gacha-rates"></p>
+      <div class="gacha-buttons">
+        <button id="pull1-btn">1회 모집</button>
+        <button id="pull10-btn">10연 모집</button>
+      </div>
+      <div id="gacha-result" class="gacha-result"></div>
+    </section>
+
+    <!-- 전초기지 탭 -->
+    <section id="tab-outpost" class="tab hidden">
+      <div class="outpost-card">
+        <div class="outpost-title">전초기지 <span id="outpost-level">1</span> Lv</div>
+        <div class="outpost-rate">수급 <b id="outpost-rate">0 /초</b></div>
+        <button id="outpost-upgrade-btn">레벨업</button>
+      </div>
+      <div class="outpost-card">
+        <div class="outpost-title">무료 젬</div>
+        <div class="outpost-rate">광고 시청 보상</div>
+        <button id="ad-gem-btn" class="ad-btn">📺 광고 보고 젬 150 획득</button>
+      </div>
+      <div class="settings-card">
+        <div class="settings-title">설정</div>
+        <button id="reset-btn">데이터 초기화</button>
+      </div>
+    </section>
+
+    <!-- 하단 탭 네비 -->
+    <nav id="tabnav">
+      <button data-tab="combat" class="active">전투</button>
+      <button data-tab="nikke">아스트라</button>
+      <button data-tab="gacha">모집</button>
+      <button data-tab="outpost">전초기지</button>
+    </nav>
+
+    <!-- 하단 고정 배너 슬롯 (320×50 자리 예약 — 레이아웃 시프트 방지) -->
+    <div id="banner-slot" class="banner-slot hidden"></div>
+  </div>
+
+  <!-- 복귀 정산 모달 -->
+  <div id="return-modal" class="modal hidden">
+    <div class="modal-box">
+      <h2>복귀 정산</h2>
+      <div id="return-body"></div>
+      <button id="ad-double-btn" class="ad-btn">📺 광고 보고 2배 수령</button>
+      <button id="return-close">수령</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ads.js"></script>
+  <script src="js/combat.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/idle.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
