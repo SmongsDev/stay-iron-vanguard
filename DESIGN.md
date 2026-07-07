@@ -95,6 +95,14 @@ v1은 니케 팬 프로젝트로 시작했으나 v2에서 오리지널 IP로 리
 - 하단 고정 슬롯 `#banner-slot` (320×50 중앙정렬, 자리 예약으로 레이아웃 시프트 방지)
 - mock: 플레이스홀더 표시. crazygames: 숨김. 자체 배포 시 AdSense 코드를 붙일 수 있도록 슬롯만 마련 (v2에서는 실 코드 미삽입)
 
+### CrazyGames 광고 정책 준수 (v2.3 — 제출 전 필수)
+공식 문서(docs.crazygames.com/requirements/ads/) 기준:
+- **광고 중 게임 일시정지 (리젝 사유)**: 모든 광고(mock 포함) adStarted 시 게임 루프 정지 + `gameplayStop()`, adFinished/adError 시 재개 + `gameplayStart()`. main.js에 `pauseLoop()`/`resumeLoop()` 제공, ads.js가 호출
+- **미드게임 광고**: `requestAd('midgame')`. 자연 전환점 2곳 — ① 보스 재도전 버튼 클릭 직후 ② 복귀 정산 모달 수령 클릭 직후. 빈도는 SDK가 자동 관리(3분 캡, 조기 요청은 무시됨)라 게임에서 별도 쿨다운 불요. mock은 짧은 전면 오버레이로 시뮬레이션, none은 즉시 통과
+- **보상형 규칙**: adFinished에서만 보상(adError 무보상), 광고 시청임을 문구로 명시("광고 보고 ~"), 하나의 보상에 광고 1회만
+- **배너**: SDK v3에 배너 API가 있으나 "게임플레이 화면 노출 금지" 규칙상 단일 화면 방치형인 본 게임은 CrazyGames 모드에서 배너 미사용 유지 (자체 배포 모드 전용)
+- **실패 내성**: adblock/unfilled/adsDisabledBasicLaunch 어느 경우에도 게임 정상 동작, 애드블록 사용자 불이익 금지
+
 ### 배포 전략
 - 1차: CrazyGames 제출 (보상형 수익쉐어). 2차: Poki 도전. 병행: GitHub/Cloudflare Pages 자체 배포 + 추후 AdSense/H5 Games Ads
 - 저장 키: 리브랜딩과 함께 `stay_iron_vanguard` 로 교체, SAVE_VERSION=2 (구버전 세이브는 새 게임 처리 — 프리릴리즈라 마이그레이션 불요)

@@ -21,6 +21,17 @@ function startLoop() {
   Ads.gameplayStart();      // 전투 루프 시작 = gameplay 시작
 }
 
+// 광고 중 게임 일시정지/재개 (ads.js가 호출). 중복 호출 안전.
+function pauseLoop() {
+  if (!_loopHandle) return;
+  clearInterval(_loopHandle);
+  _loopHandle = null;
+}
+function resumeLoop() {
+  if (_loopHandle) return;
+  _loopHandle = setInterval(gameTick, CONST.TICK_MS);
+}
+
 function init() {
   Ads.init();                       // ads.js: 어댑터 선택 + (필요 시) SDK 동적 로드
   const load = loadGame();          // state.js

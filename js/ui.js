@@ -42,15 +42,16 @@ function initUI() {
   el('pull1-btn').addEventListener('click', () => doPull(1));
   el('pull10-btn').addEventListener('click', () => doPull(10));
 
-  // 전투
-  el('retry-btn').addEventListener('click', () => { retryBoss(); });
+  // 전투: 보스 재도전 직후 미드게임 광고 (자연 전환점)
+  el('retry-btn').addEventListener('click', () => { retryBoss(); Ads.showMidgame(); });
 
   // 전초기지 / 설정
   el('outpost-upgrade-btn').addEventListener('click', () => {
     if (upgradeOutpost()) { markOutpostDirty(); markRosterDirty(); }
   });
   el('reset-btn').addEventListener('click', onResetClick);
-  el('return-close').addEventListener('click', () => el('return-modal').classList.add('hidden'));
+  // 복귀 정산 수령 직후 미드게임 광고 (자연 전환점)
+  el('return-close').addEventListener('click', () => { el('return-modal').classList.add('hidden'); Ads.showMidgame(); });
 
   // 보상형 광고 배치 3종
   el('ad-boost-btn').addEventListener('click', onAdBoost);

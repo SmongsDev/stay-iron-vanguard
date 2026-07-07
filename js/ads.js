@@ -14,28 +14,32 @@ const Ads = (function () {
 
   const mode = pickMode();
 
-  // ── mock 어댑터: 3초 카운트다운 오버레이 (외부 요청 0) ──
+  // 오버레이 컨테이너 확보 (내용은 호출마다 새로 채움)
+  function ensureOverlay() {
+    let o = document.getElementById('ad-overlay');
+    if (!o) {
+      o = document.createElement('div');
+      o.id = 'ad-overlay';
+      o.className = 'ad-overlay hidden';
+      document.body.appendChild(o);
+    }
+    return o;
+  }
+
+  // ── mock 어댑터: 카운트다운/전면 오버레이 (외부 요청 0) ──
   const mockAdapter = {
     init() {},
     showRewarded(onReward, onFail) {
-      let overlay = document.getElementById('ad-overlay');
-      if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.id = 'ad-overlay';
-        overlay.className = 'ad-overlay hidden';
-        overlay.innerHTML =
-          '<div class="ad-box"><div class="ad-tag">광고 (데모)</div>' +
-          '<div id="ad-count" class="ad-count">3</div>' +
-          '<div class="ad-msg">보상형 광고 시청 중…</div>' +
-          '<button id="ad-cancel" class="ad-cancel">건너뛰기 (보상 없음)</button></div>';
-        document.body.appendChild(overlay);
-      }
+      const overlay = ensureOverlay();
+      overlay.innerHTML =
+        '<div class="ad-box"><div class="ad-tag">광고 (데모)</div>' +
+        '<div id="ad-count" class="ad-count">3</div>' +
+        '<div class="ad-msg">보상형 광고 시청 중…</div>' +
+        '<button id="ad-cancel" class="ad-cancel">건너뛰기 (보상 없음)</button></div>';
+      overlay.classList.remove('hidden');
       const countEl = overlay.querySelector('#ad-count');
       const cancelBtn = overlay.querySelector('#ad-cancel');
-      overlay.classList.remove('hidden');
-      let remain = 3;
-      countEl.textContent = String(remain);
-      let done = false;
+      let remain = 3, done = false;
       const finish = (rewarded) => {
         if (done) return;
         done = true;
@@ -50,6 +54,14 @@ const Ads = (function () {
         countEl.textContent = String(remain);
       }, 1000);
       cancelBtn.onclick = () => finish(false); // 취소 시 보상 없음
+    },
+    showMidgame(onDone) {
+      const overlay = ensureOverlay();
+      overlay.innerHTML =
+        '<div class="ad-box"><div class="ad-tag">광고 (데모)</div>' +
+        '<div class="ad-msg">잠시 후 계속…</div></div>';
+      overlay.classList.remove('hidden');
+      setTimeout(() => { overlay.classList.add('hidden'); onDone && onDone(); }, 1500);
     },
     showBanner() { setBanner(true); },
     hideBanner() { setBanner(false); },
@@ -90,6 +102,16 @@ const Ads = (function () {
         adError: (err) => { onFail && onFail(err); },
       });
     },
+    showMidgame(onDone) {
+      const sdk = window.CrazyGames && window.CrazyGames.SDK;
+      if (!this._ready || !sdk || !sdk.ad) { onDone && onDone(); return; }
+      // 미드게임: 보상 없음. finished/error 모두 onDone (SDK가 3분 캡 자동 관리)
+      sdk.ad.requestAd('midgame', {
+        adStarted: () => {},
+        adFinished: () => { onDone && onDone(); },
+        adError: () => { onDone && onDone(); },
+      });
+    },
     showBanner() {},           // 포털 운영 배너
     hideBanner() { setBanner(false); },
     gameplayStart() { safeGame('gameplayStart'); },
@@ -107,6 +129,7 @@ const Ads = (function () {
   const noneAdapter = {
     init() { setBanner(false); },
     showRewarded(onReward, onFail) { onFail && onFail('ads-disabled'); },
+    showMidgame(onDone) { onDone && onDone(); },  // 즉시 통과
     showBanner() {},
     hideBanner() { setBanner(false); },
     gameplayStart() {},
@@ -123,11 +146,32 @@ const Ads = (function () {
 
   const adapter = mode === 'crazygames' ? crazyAdapter : mode === 'none' ? noneAdapter : mockAdapter;
 
+  // 광고 정책: 광고 시작 시 게임 일시정지 + gameplayStop, 종료(보상/실패/취소) 시 재개 + gameplayStart
+  function beginAd() {
+    try { if (typeof saveGame === 'function') saveGame(); } catch (e) {} // 정지 중 저장 틱 멈춤 대비 1회 저장
+    if (typeof pauseLoop === 'function') pauseLoop();
+    adapter.gameplayStop();
+  }
+  function endAd() {
+    if (typeof resumeLoop === 'function') resumeLoop();
+    adapter.gameplayStart();
+  }
+
   return {
     mode,
     hasAds: mode !== 'none',
     init() { adapter.init(); if (mode === 'mock') adapter.showBanner(); },
-    showRewarded(onReward, onFail) { adapter.showRewarded(onReward, onFail); },
+    showRewarded(onReward, onFail) {
+      beginAd();
+      adapter.showRewarded(
+        () => { endAd(); onReward && onReward(); },
+        (r) => { endAd(); onFail && onFail(r); }
+      );
+    },
+    showMidgame(onDone) {
+      beginAd();
+      adapter.showMidgame(() => { endAd(); onDone && onDone(); });
+    },
     showBanner() { adapter.showBanner(); },
     hideBanner() { adapter.hideBanner(); },
     gameplayStart() { adapter.gameplayStart(); },
