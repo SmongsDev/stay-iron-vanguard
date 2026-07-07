@@ -171,7 +171,7 @@ function renderTeamSlots() {
     const id = state.team[i];
     if (id) {
       const b = ROSTER_MAP[id];
-      slots.push(`<div class="slot r-${b.rarity}"><span class="slot-name">${b.name}</span><span class="slot-sub">${b.rarity}·B${b.burst}·Lv${state.nikkes[id].level}</span></div>`);
+      slots.push(`<div class="slot r-${b.rarity}"><div class="slot-icon">${nikkeIcon(id)}</div><span class="slot-name">${b.name}</span><span class="slot-sub">${b.rarity}·B${b.burst}·Lv${state.nikkes[id].level}</span></div>`);
     } else {
       slots.push('<div class="slot empty">빈 슬롯</div>');
     }
@@ -190,6 +190,8 @@ function renderRoster() {
     const atk = nikkeAtk(n.id);
     const canLevel = state.credits >= cost;
     return `<div class="nikke r-${n.rarity}">
+      <div class="nk-icon">${nikkeIcon(n.id)}</div>
+      <div class="nk-body">
       <div class="nikke-head"><span class="nk-name">${n.name}</span>
         <span class="badge b-${n.rarity}">${n.rarity}</span>
         <span class="badge b-burst">B${n.burst}</span>
@@ -198,7 +200,7 @@ function renderRoster() {
       <div class="nikke-actions">
         <button data-action="level" data-id="${n.id}" class="${canLevel ? '' : 'dim'}">레벨업 (${fmt(cost)})</button>
         <button data-action="team" data-id="${n.id}" class="${inTeam ? 'on' : ''}">${inTeam ? '편성 해제' : '편성'}</button>
-      </div></div>`;
+      </div></div></div>`;
   });
   el('roster-list').innerHTML = rows.join('') || '<p class="muted">보유 아스트라 없음</p>';
 }
@@ -228,7 +230,7 @@ function doPull(count) {
   markRosterDirty();
   const cards = res.results.map((r) => {
     const tag = r.maxed ? `만돌파→+${fmt(r.refund)}크레딧` : r.dup ? '코어 +1' : 'NEW';
-    return `<div class="pull-card r-${r.rarity}"><span class="pc-r">${r.rarity}</span><span class="pc-n">${r.name}</span><span class="pc-t">${tag}</span></div>`;
+    return `<div class="pull-card r-${r.rarity}"><div class="pc-icon">${nikkeIcon(r.id)}</div><span class="pc-r">${r.rarity}</span><span class="pc-n">${r.name}</span><span class="pc-t">${tag}</span></div>`;
   });
   el('gacha-result').innerHTML = cards.join('');
 }

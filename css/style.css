@@ -202,3 +202,17 @@ button.danger { background: var(--danger); color: #fff; border-color: var(--dang
   display: flex; align-items: center; justify-content: center;
   background: var(--panel-2); border: 1px dashed var(--line); color: var(--muted);
   font-size: 11px; letter-spacing: 1px; }
+
+/* 캐릭터 아이콘 (프로시저럴 SVG) */
+.nk-svg { display: block; }
+.nikke { display: flex; align-items: flex-start; gap: 10px; }
+.nk-icon { flex: 0 0 auto; }
+.nk-icon .nk-svg { width: 48px; height: 48px; }
+.nk-body { flex: 1 1 auto; min-width: 0; }
+.slot-icon .nk-svg { width: 40px; height: 40px; margin: 0 auto 4px; }
+.pc-icon .nk-svg { width: 56px; height: 56px; margin: 0 auto 4px; }
+@keyframes ssrGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,196,77,.5); }
+  50% { box-shadow: 0 0 22px rgba(255,196,77,.95); }
+}
+.pull-card.r-SSR { animation: ssrGlow 1.2s ease-in-out infinite; }
