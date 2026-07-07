@@ -3,11 +3,14 @@
 'use strict';
 
 const Ads = (function () {
-  // 어댑터 선택: ?ads=mock|crazygames|none, 없으면 crazygames.com 호스트 자동감지, 기본 mock
+  // 어댑터 선택 우선순위: 빌드 강제 플래그(window.__ADS_FORCE, CrazyGames 제출 zip이 주입)
+  // → ?ads=mock|crazygames|none → crazygames.com 호스트 자동감지 → 기본 mock
   function pickMode() {
+    const valid = (v) => v === 'mock' || v === 'crazygames' || v === 'none';
+    if (typeof window !== 'undefined' && valid(window.__ADS_FORCE)) return window.__ADS_FORCE;
     let q = '';
     try { q = new URLSearchParams(location.search).get('ads') || ''; } catch (e) { q = ''; }
-    if (q === 'mock' || q === 'crazygames' || q === 'none') return q;
+    if (valid(q)) return q;
     if (typeof location !== 'undefined' && /(^|\.)crazygames\.com$/.test(location.hostname)) return 'crazygames';
     return 'mock';
   }
